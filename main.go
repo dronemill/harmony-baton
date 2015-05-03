@@ -59,7 +59,7 @@ func main() {
 			Subcommands: []cli.Command{
 				{
 					Name:   "add",
-					Usage:  "add a new container",
+					Usage:  "add a new container. Returns new container id",
 					Flags:  flagsContianersAdd,
 					Action: baton.ContainersAdd,
 				},

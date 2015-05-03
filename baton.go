@@ -43,11 +43,62 @@ func (b *Baton) Containers(c *cli.Context) {
 
 // ContainersAdd will add a container
 func (b *Baton) ContainersAdd(c *cli.Context) {
+	if err := b.maestroConnect(c); err != nil {
+		fmt.Printf("%s\n\n", err.Error())
+		return
+	}
 
+	machineID := c.String("machine-id")
+	if machineID == "" {
+		fmt.Println("machine-id is required")
+		return
+	}
+
+	name := c.String("name")
+	if name == "" {
+		fmt.Println("name is required")
+		return
+	}
+
+	hostname := c.String("hostname")
+	if hostname == "" {
+		fmt.Println("hostname is required")
+		return
+	}
+
+	image := c.String("image")
+	if image == "" {
+		fmt.Println("image is required")
+		return
+	}
+
+	entryPoint := c.String("entry-point")
+
+	cntr := &harmonyclient.Container{
+		MachineID:  machineID,
+		Name:       name,
+		Hostname:   hostname,
+		Image:      image,
+		EntryPoint: entryPoint,
+	}
+
+	newCntr, err := b.Harmony.ContainersAdd(cntr)
+
+	if err != nil {
+		fmt.Printf("Error encountered while attempting to create new container: %s\n", err.Error())
+		return
+	}
+
+	fmt.Printf("%s\n", newCntr.ID)
 }
 
 // ContainersList will list containers
 func (b *Baton) ContainersList(c *cli.Context) {
+	if err := b.maestroConnect(c); err != nil {
+		fmt.Printf("%s\n\n", err.Error())
+		return
+	}
+
 	ctrs, err := b.Harmony.Containers()
 
 	if err != nil {
@@ -56,14 +107,14 @@ func (b *Baton) ContainersList(c *cli.Context) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"ID", "MachineID", "Name", "Hostname", "CID"})
+	table.SetHeader([]string{"ID", "Name", "Hostname", "MachineID", "CID"})
 
 	for _, v := range *ctrs {
 		r := []string{
 			v.ID,
-			v.MachineID,
 			v.Name,
 			v.Hostname,
+			v.MachineID,
 			v.CID,
 		}
 
