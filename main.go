@@ -10,13 +10,13 @@ var baton = Baton{}
 
 var flagsBase = []cli.Flag{
 	cli.StringFlag{
-		Name:  "maestro",
+		Name:  "harmony-api",
 		Value: "http://harmony.dev:4774",
 		Usage: "the maestro to connect to",
 	},
 	cli.BoolFlag{
 		Name:  "noverifyssl",
-		Usage: "do not verify maestro ssl connections",
+		Usage: "do not verify api ssl connections",
 	},
 }
 

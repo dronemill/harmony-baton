@@ -21,7 +21,7 @@ type Baton struct {
 // maestroConnect will get a connected maestro client
 func (b *Baton) maestroConnect(c *cli.Context) error {
 	config := harmonyclient.Config{
-		APIHost:      c.String("maestro"),
+		APIHost:      c.String("harmony-api"),
 		APIVersion:   "v1",
 		APIVerifySSL: !c.Bool("noverifyssl"),
 	}
