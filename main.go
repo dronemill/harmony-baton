@@ -64,7 +64,7 @@ func main() {
 				},
 				{
 					Name:   "show",
-					Usage:  "show containers",
+					Usage:  "containers show [containerID | name]",
 					Flags:  flagsBase,
 					Action: baton.ContainersShow,
 				},
@@ -77,7 +77,7 @@ func main() {
 			Subcommands: []cli.Command{
 				{
 					Name:   "show",
-					Usage:  "show machines",
+					Usage:  "machines show [machineID | name] [containers]",
 					Flags:  flagsBase,
 					Action: baton.MachinesShow,
 				},

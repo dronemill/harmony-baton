@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/codegangsta/cli"
 	"github.com/dronemill/harmony-client-go"
@@ -138,7 +139,22 @@ func (b *Baton) MachinesShow(c *cli.Context) {
 		return
 	}
 
-	ctrs, err := b.Harmony.Machines()
+	if len(c.Args()) == 0 {
+		b.showMachines(c)
+		return
+	}
+
+	machineID := c.Args()[0]
+	if matched, _ := regexp.MatchString("^[0-9]*$", machineID); matched {
+		b.showMachineByID(c, machineID)
+	} else {
+		b.showMachineByName(c, machineID)
+	}
+}
+
+// showMachines is the command processor for showing all machines
+func (b *Baton) showMachines(c *cli.Context) {
+	machines, err := b.Harmony.Machines()
 
 	if err != nil {
 		fmt.Printf("GOT ERROR: %s\n", err.Error())
@@ -148,7 +164,7 @@ func (b *Baton) MachinesShow(c *cli.Context) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"ID", "Name", "Hostname"})
 
-	for _, v := range *ctrs {
+	for _, v := range *machines {
 		r := []string{
 			v.ID,
 			v.Name,
@@ -161,4 +177,71 @@ func (b *Baton) MachinesShow(c *cli.Context) {
 	fmt.Println()
 	table.SetBorder(false)
 	table.Render() // Send output
+}
+
+// showMachineByID will show a machine by its id
+func (b *Baton) showMachineByID(c *cli.Context, ID string) {
+	m, err := b.Harmony.Machine(ID)
+
+	if err != nil {
+		fmt.Printf("GOT ERROR: %s\n", err.Error())
+		return
+	}
+
+	if m == nil {
+		fmt.Printf("ERROR: machineID '%s' not found\n", ID)
+		return
+	}
+
+	b.renderMachine(c, m)
+}
+
+// showMachineByName will show a machine by its name
+func (b *Baton) showMachineByName(c *cli.Context, name string) {
+	m, err := b.Harmony.MachineByName(name)
+
+	if err != nil {
+		fmt.Printf("GOT ERROR: %s\n", err.Error())
+		return
+	}
+
+	if m == nil {
+		fmt.Printf("ERROR: machine with name '%s' not found\n", name)
+		return
+	}
+
+	b.renderMachine(c, m)
+
+}
+
+// renderMachine will output a formatted machine
+func (b *Baton) renderMachine(c *cli.Context, m *harmonyclient.Machine) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Hostname"})
+
+	r := []string{
+		m.ID,
+		m.Name,
+		m.Hostname,
+	}
+	table.Append(r)
+
+	fmt.Println()
+	table.SetBorder(false)
+	table.Render() // Send output
+
+	table = tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Containers"})
+	for _, v := range m.ContainerIDs {
+		r := []string{
+			v,
+		}
+
+		table.Append(r)
+	}
+
+	fmt.Println()
+	table.SetBorder(false)
+	table.Render() // Send output
+
 }
