@@ -41,6 +41,11 @@ func (b *Baton) Containers(c *cli.Context) {
 	cli.ShowAppHelp(c)
 }
 
+// Machines will show help for the contianers section of the app
+func (b *Baton) Machines(c *cli.Context) {
+	cli.ShowAppHelp(c)
+}
+
 // ContainersAdd will add a container
 func (b *Baton) ContainersAdd(c *cli.Context) {
 	if err := b.maestroConnect(c); err != nil {
@@ -116,6 +121,38 @@ func (b *Baton) ContainersList(c *cli.Context) {
 			v.Hostname,
 			v.MachineID,
 			v.CID,
+		}
+
+		table.Append(r)
+	}
+
+	fmt.Println()
+	table.SetBorder(false)
+	table.Render() // Send output
+}
+
+// MachinesList will list machines
+func (b *Baton) MachinesList(c *cli.Context) {
+	if err := b.maestroConnect(c); err != nil {
+		fmt.Printf("%s\n\n", err.Error())
+		return
+	}
+
+	ctrs, err := b.Harmony.Machines()
+
+	if err != nil {
+		fmt.Printf("GOT ERROR: %s\n", err.Error())
+		return
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Hostname"})
+
+	for _, v := range *ctrs {
+		r := []string{
+			v.ID,
+			v.Name,
+			v.Hostname,
 		}
 
 		table.Append(r)

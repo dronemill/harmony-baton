@@ -52,10 +52,9 @@ func main() {
 
 	baton.App.Commands = []cli.Command{
 		{
-			Name:    "containers",
-			Aliases: []string{"cntrs"},
-			Usage:   "manage containers",
-			Action:  baton.Containers,
+			Name:   "containers",
+			Usage:  "manage containers",
+			Action: baton.Containers,
 			Subcommands: []cli.Command{
 				{
 					Name:   "add",
@@ -68,6 +67,19 @@ func main() {
 					Usage:  "list containers",
 					Flags:  flagsBase,
 					Action: baton.ContainersList,
+				},
+			},
+		},
+		{
+			Name:   "machines",
+			Usage:  "manage machines",
+			Action: baton.Machines,
+			Subcommands: []cli.Command{
+				{
+					Name:   "list",
+					Usage:  "list machines",
+					Flags:  flagsBase,
+					Action: baton.MachinesList,
 				},
 			},
 		},
