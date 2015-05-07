@@ -63,10 +63,10 @@ func main() {
 					Action: baton.ContainersAdd,
 				},
 				{
-					Name:   "list",
-					Usage:  "list containers",
+					Name:   "show",
+					Usage:  "show containers",
 					Flags:  flagsBase,
-					Action: baton.ContainersList,
+					Action: baton.ContainersShow,
 				},
 			},
 		},
@@ -76,10 +76,10 @@ func main() {
 			Action: baton.Machines,
 			Subcommands: []cli.Command{
 				{
-					Name:   "list",
-					Usage:  "list machines",
+					Name:   "show",
+					Usage:  "show machines",
 					Flags:  flagsBase,
-					Action: baton.MachinesList,
+					Action: baton.MachinesShow,
 				},
 			},
 		},

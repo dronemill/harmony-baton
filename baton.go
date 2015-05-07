@@ -97,8 +97,8 @@ func (b *Baton) ContainersAdd(c *cli.Context) {
 	fmt.Printf("%s\n", newCntr.ID)
 }
 
-// ContainersList will list containers
-func (b *Baton) ContainersList(c *cli.Context) {
+// ContainersShow will show containers
+func (b *Baton) ContainersShow(c *cli.Context) {
 	if err := b.maestroConnect(c); err != nil {
 		fmt.Printf("%s\n\n", err.Error())
 		return
@@ -131,8 +131,8 @@ func (b *Baton) ContainersList(c *cli.Context) {
 	table.Render() // Send output
 }
 
-// MachinesList will list machines
-func (b *Baton) MachinesList(c *cli.Context) {
+// MachinesShow will show machines
+func (b *Baton) MachinesShow(c *cli.Context) {
 	if err := b.maestroConnect(c); err != nil {
 		fmt.Printf("%s\n\n", err.Error())
 		return
