@@ -116,12 +116,16 @@ func (b *Baton) ContainersShow(c *cli.Context) {
 	table.SetHeader([]string{"ID", "Name", "Hostname", "MachineID", "CID"})
 
 	for _, v := range *ctrs {
+		cid := v.CID
+		if len(cid) > 12 {
+			cid = v.CID[0:12]
+		}
 		r := []string{
 			v.ID,
 			v.Name,
 			v.Hostname,
 			v.MachineID,
-			v.CID,
+			cid,
 		}
 
 		table.Append(r)
