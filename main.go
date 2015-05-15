@@ -41,6 +41,10 @@ var flagsContianersAdd = append(flagsBase,
 		Name:  "entry-point",
 		Usage: "the container entry-point",
 	},
+	cli.BoolFlag{
+		Name:  "start",
+		Usage: "start container after being created",
+	},
 )
 
 func main() {
@@ -64,9 +68,21 @@ func main() {
 				},
 				{
 					Name:   "show",
-					Usage:  "containers show [containerID | name]",
+					Usage:  "containers show",
 					Flags:  flagsBase,
 					Action: baton.ContainersShow,
+				},
+				{
+					Name:   "start",
+					Usage:  "containers start <containerID|name>",
+					Flags:  flagsBase,
+					Action: baton.ContainersStart,
+				},
+				{
+					Name:   "stop",
+					Usage:  "containers stop <containerID|name>",
+					Flags:  flagsBase,
+					Action: baton.ContainersStop,
 				},
 			},
 		},

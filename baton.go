@@ -37,13 +37,12 @@ func (b *Baton) maestroConnect(c *cli.Context) error {
 	return nil
 }
 
+//
+// CONTAINERS
+//
+
 // Containers will show help for the contianers section of the app
 func (b *Baton) Containers(c *cli.Context) {
-	cli.ShowAppHelp(c)
-}
-
-// Machines will show help for the contianers section of the app
-func (b *Baton) Machines(c *cli.Context) {
 	cli.ShowAppHelp(c)
 }
 
@@ -86,6 +85,7 @@ func (b *Baton) ContainersAdd(c *cli.Context) {
 		Hostname:   hostname,
 		Image:      image,
 		EntryPoint: entryPoint,
+		Enabled:    c.Bool("start"),
 	}
 
 	newCntr, err := b.Harmony.ContainersAdd(cntr)
@@ -134,6 +134,71 @@ func (b *Baton) ContainersShow(c *cli.Context) {
 	fmt.Println()
 	table.SetBorder(false)
 	table.Render() // Send output
+}
+
+// ContainersStart will start a container
+func (b *Baton) ContainersStart(c *cli.Context) {
+	b.containersSetEnabled(c, true)
+}
+
+// ContainersStop will start a container
+func (b *Baton) ContainersStop(c *cli.Context) {
+	b.containersSetEnabled(c, false)
+}
+
+// ContainersStop will stop a container
+func (b *Baton) containersSetEnabled(c *cli.Context, enabled bool) {
+	if len(c.Args()) == 0 {
+		fmt.Print("ContainerID or Name is required\n\n")
+		cli.ShowAppHelp(c)
+		return
+	}
+
+	if err := b.maestroConnect(c); err != nil {
+		fmt.Printf("%s\n\n", err.Error())
+		return
+	}
+
+	container := b.findContainer(c, c.Args()[0])
+	containerID := container.ID
+
+	if err := b.Harmony.ContainersEnabledUpdate(containerID, enabled); err != nil {
+		fmt.Printf("%s\n\n", err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("OK\n")
+}
+
+// findContainer by its name or ID
+func (b *Baton) findContainer(c *cli.Context, containerID string) (container *harmonyclient.Container) {
+	var err error
+	if matched, _ := regexp.MatchString("^[0-9]*$", containerID); matched {
+		container, err = b.Harmony.Container(containerID)
+	} else {
+		container, err = b.Harmony.ContainerByName(containerID)
+	}
+
+	if err != nil {
+		fmt.Printf("GOT ERROR: %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	if container == nil {
+		fmt.Printf("[404] Container not found [%s]\n", containerID)
+		os.Exit(1)
+	}
+
+	return container
+}
+
+//
+// MACHINES
+//
+
+// Machines will show help for the contianers section of the app
+func (b *Baton) Machines(c *cli.Context) {
+	cli.ShowAppHelp(c)
 }
 
 // MachinesShow will show machines
